@@ -1,13 +1,31 @@
 package com.bardackx.jhpp.tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.junit.Test;
 
 import com.bardackx.jhpp.Jhpp;
+import com.bardackx.jhpp.JhppException;
 import com.bardackx.jhpp.tests.abpe.AdamBertramPersonalExample;
 import com.bardackx.jhpp.tests.abpe.Dog;
 import com.bardackx.jhpp.tests.abpe.Spouse;
+import com.bardackx.jhpp.tests.collections.ExchangeRates;
+import com.bardackx.jhpp.tests.collections.Measure;
+import com.bardackx.jhpp.tests.collections.TodoList;
+import com.bardackx.jhpp.tests.collections.TodoListItem;
+import com.bardackx.jhpp.tests.exceptions.NoDefaultConstructor;
+import com.bardackx.jhpp.tests.exceptions.NoDefaultConstructorWrapper;
+import com.bardackx.jhpp.tests.exceptions.NoGetter;
+import com.bardackx.jhpp.tests.exceptions.NoGetterSetterWrapper;
+import com.bardackx.jhpp.tests.exceptions.NoSetter;
 import com.bardackx.jhpp.tests.glossary.GlossDef;
 import com.bardackx.jhpp.tests.glossary.GlossDiv;
 import com.bardackx.jhpp.tests.glossary.GlossEntry;
@@ -44,15 +62,18 @@ public class JhppTests {
 		spouse.setInterests(new String[] { "Instagram", "Facebook", "Keeping the Bertram family in check" });
 		expected.setSpouse(spouse);
 
-		Dog[] dogs = new Dog[2];
-		dogs[0] = new Dog();
-		dogs[0].setName("Elliot");
-		dogs[0].setBreed("Shih-Tzu");
-		dogs[0].setColor("black/white");
-		dogs[1] = new Dog();
-		dogs[1].setName("Brody");
-		dogs[1].setBreed("Shih-Tzu");
-		dogs[1].setColor("black/white");
+		Dog dog1 = new Dog();
+		dog1.setName("Elliot");
+		dog1.setBreed("Shih-Tzu");
+		dog1.setColor("black/white");
+
+		Dog dog2 = new Dog();
+		dog2.setName("Brody");
+		dog2.setBreed("Shih-Tzu");
+		dog2.setColor("black/white");
+
+		Dog[] dogs = new Dog[] { dog1, dog2 };
+
 		expected.setDogs(dogs);
 
 		Util.assertEqualsVerbose(expected, actual);
@@ -119,5 +140,114 @@ public class JhppTests {
 		expected.setPopup(popup);
 
 		Util.assertEqualsVerbose(expected, actual);
+	}
+
+	@Test(expected = JhppException.class)
+	public void noDefaultConstructorInMainObjectClassTest() {
+		try {
+			new Jhpp().fromProperties(getClass().getResourceAsStream("exceptions/wrapper.properties"),
+					NoDefaultConstructor.class);
+		} catch (JhppException ex) {
+			assertEquals(JhppException.Code.DEFAULT_CONSTRUCTOR_IS_MISSING, ex.getType());
+			throw ex;
+		}
+	}
+
+	@Test(expected = JhppException.class)
+	public void noDefaultConstructorInNestedObjectClassTest() {
+		try {
+			new Jhpp().fromProperties(getClass().getResourceAsStream("exceptions/wrapper.properties"),
+					NoDefaultConstructorWrapper.class);
+		} catch (JhppException ex) {
+			assertEquals(JhppException.Code.DEFAULT_CONSTRUCTOR_IS_MISSING, ex.getType());
+			throw ex;
+		}
+	}
+
+	@Test(expected = JhppException.class)
+	public void noGetterMethodTest() {
+		try {
+			new Jhpp().fromProperties(getClass().getResourceAsStream("exceptions/nogetset.properties"), NoGetter.class);
+		} catch (JhppException ex) {
+			assertEquals(JhppException.Code.GETTER_IS_MISSING, ex.getType());
+			throw ex;
+		}
+	}
+
+	@Test(expected = JhppException.class)
+	public void noSetterMethodTest() {
+		try {
+			new Jhpp().fromProperties(getClass().getResourceAsStream("exceptions/nogetset.properties"), NoSetter.class);
+		} catch (JhppException ex) {
+			assertEquals(JhppException.Code.SETTER_IS_MISSING, ex.getType());
+			throw ex;
+		}
+	}
+
+	@Test(expected = JhppException.class)
+	public void noGetterMethodInNestedObjectTest() {
+		try {
+			new Jhpp().fromProperties(getClass().getResourceAsStream("exceptions/nested-noget.properties"),
+					NoGetterSetterWrapper.class);
+		} catch (JhppException ex) {
+			assertEquals(JhppException.Code.GETTER_IS_MISSING, ex.getType());
+			throw ex;
+		}
+	}
+
+	@Test(expected = JhppException.class)
+	public void noSetterMethodInNestedObjectTest() {
+		try {
+			new Jhpp().fromProperties(getClass().getResourceAsStream("exceptions/nested-noset.properties"),
+					NoGetterSetterWrapper.class);
+		} catch (JhppException ex) {
+			assertEquals(JhppException.Code.SETTER_IS_MISSING, ex.getType());
+			throw ex;
+		}
+	}
+
+	@Test
+	public void mapTest() {
+
+		ExchangeRates actual = new Jhpp().fromProperties(
+				getClass().getResourceAsStream("collections/exchange-rates.properties"), ExchangeRates.class);
+
+		ExchangeRates expected = new ExchangeRates();
+		expected.setCurrency("mxn");
+
+		Map<String, Measure> measures = new HashMap<>();
+		measures.put("usd", new Measure(19.15, "Google"));
+		measures.put("eur", new Measure(21.71, "Yahoo"));
+		measures.put("cad", new Measure(14.57, "Google"));
+
+		expected.setMeasures(measures);
+
+		Util.assertEqualsVerbose(expected, actual);
+	}
+
+	@Test
+	public void setList() {
+
+		TodoList actual = new Jhpp().fromProperties(getClass().getResourceAsStream("collections/todolist.properties"),
+				TodoList.class);
+
+		TodoList expected = new TodoList();
+		expected.setTitle("title");
+
+		List<TodoListItem> items = new ArrayList<>();
+		items.add(new TodoListItem("test 1", "desc 1"));
+		items.add(new TodoListItem("test 2", "desc 2"));
+		items.add(new TodoListItem("test 3", "desc 3"));
+		
+		expected.setItems(items);
+
+		Set<String> tags = new HashSet<>();
+		tags.add("test");
+		tags.add("useless");
+		tags.add("funny");
+		expected.setTags(tags);
+
+		Util.assertEqualsVerbose(expected, actual);
+
 	}
 }

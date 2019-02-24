@@ -87,39 +87,25 @@ public class AdamBertramPersonalExample {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
+		if (this == obj) return true;
+		if (obj == null) return false;
+		if (getClass() != obj.getClass()) return false;
 		AdamBertramPersonalExample other = (AdamBertramPersonalExample) obj;
-		if (dogCount != other.dogCount)
-			return false;
-		if (!Arrays.equals(dogs, other.dogs))
-			return false;
+		if (dogCount != other.dogCount) return false;
+		if (!Arrays.equals(dogs, other.dogs)) return false;
 		if (firstName == null) {
-			if (other.firstName != null)
-				return false;
-		} else if (!firstName.equals(other.firstName))
-			return false;
+			if (other.firstName != null) return false;
+		} else if (!firstName.equals(other.firstName)) return false;
 		if (hairColor == null) {
-			if (other.hairColor != null)
-				return false;
-		} else if (!hairColor.equals(other.hairColor))
-			return false;
+			if (other.hairColor != null) return false;
+		} else if (!hairColor.equals(other.hairColor)) return false;
 		if (lastName == null) {
-			if (other.lastName != null)
-				return false;
-		} else if (!lastName.equals(other.lastName))
-			return false;
-		if (married != other.married)
-			return false;
+			if (other.lastName != null) return false;
+		} else if (!lastName.equals(other.lastName)) return false;
+		if (married != other.married) return false;
 		if (spouse == null) {
-			if (other.spouse != null)
-				return false;
-		} else if (!spouse.equals(other.spouse))
-			return false;
+			if (other.spouse != null) return false;
+		} else if (!spouse.equals(other.spouse)) return false;
 		return true;
 	}
 
