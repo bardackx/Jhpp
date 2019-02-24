@@ -3,6 +3,7 @@ package com.bardackx.jhpp.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,6 +35,9 @@ import com.bardackx.jhpp.tests.glossary.Glossary;
 import com.bardackx.jhpp.tests.menu.Menu;
 import com.bardackx.jhpp.tests.menu.MenuItem;
 import com.bardackx.jhpp.tests.menu.Popup;
+import com.bardackx.jhpp.tests.tutorial.Account;
+import com.bardackx.jhpp.tests.tutorial.Environment;
+import com.bardackx.jhpp.tests.tutorial.Environments;
 
 public class JhppTests {
 
@@ -226,7 +230,7 @@ public class JhppTests {
 	}
 
 	@Test
-	public void setList() {
+	public void listOfObjectsTest() {
 
 		TodoList actual = new Jhpp().fromProperties(getClass().getResourceAsStream("collections/todolist.properties"),
 				TodoList.class);
@@ -238,7 +242,7 @@ public class JhppTests {
 		items.add(new TodoListItem("test 1", "desc 1"));
 		items.add(new TodoListItem("test 2", "desc 2"));
 		items.add(new TodoListItem("test 3", "desc 3"));
-		
+
 		expected.setItems(items);
 
 		Set<String> tags = new HashSet<>();
@@ -246,6 +250,31 @@ public class JhppTests {
 		tags.add("useless");
 		tags.add("funny");
 		expected.setTags(tags);
+
+		Util.assertEqualsVerbose(expected, actual);
+
+	}
+
+	@Test
+	public void exampleTest() {
+
+		InputStream is = getClass().getResourceAsStream("tutorial/env.props");
+
+		Environments actual = new Jhpp().fromProperties(is, Environments.class);
+
+		Environments expected = new Environments();
+		
+		Environment pro = new Environment();
+		pro.setUrl("pro.example.com");
+		pro.setEmail(new Account("pro", "complex$Password123"));
+		pro.setDb(new Account("myprosql", "different$Password123"));
+		expected.setPro(pro);
+		
+		Environment qas = new Environment();
+		qas.setUrl("qas.example.com");
+		qas.setEmail(new Account("qas", "1234<-easyPassword"));
+		qas.setDb(new Account("myqassql", "1234<-samePassword"));
+		expected.setQas(qas);
 
 		Util.assertEqualsVerbose(expected, actual);
 

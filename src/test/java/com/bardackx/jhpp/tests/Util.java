@@ -59,7 +59,7 @@ public class Util {
 
 				if (expectedValue == null && actualValue == null) continue;
 
-				if (expectedValue == null) assertNull(actualValue);
+				if (expectedValue == null) assertNull(method.getName().substring(3), actualValue);
 
 				if (expectedValue instanceof BigDecimal) expectedValue = simplifyBigDecimal((BigDecimal) expectedValue);
 				if (actualValue instanceof BigDecimal) actualValue = simplifyBigDecimal((BigDecimal) actualValue);

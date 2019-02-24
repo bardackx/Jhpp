@@ -24,6 +24,15 @@ public class Jhpp {
 
 	private Map<String, Map<String, Object>> maps;
 
+	/**
+	 * This method parses the given properties object into an object of the
+	 * specified type.
+	 * 
+	 * @param <E> the type of the desired object
+	 * @param p the parsed properties
+	 * @param t the class of E
+	 * @return the parsed oject
+	 */
 	public <E> E fromProperties(Properties p, Class<E> t) {
 		try {
 			maps = new HashMap<>();
@@ -246,7 +255,8 @@ public class Jhpp {
 			for (int i = 0; i < length; i++)
 				set.add(Array.get(array, i));
 			return (E) set;
-		};
+		}
+		;
 
 		throw new JhppException(Code.UNEXPECTED, "Deserialization not supported for '" + type + "' type");
 	}
@@ -340,6 +350,22 @@ public class Jhpp {
 		}
 	}
 
+	/**
+	 * This is equivalent to creating a properties object and load the given input
+	 * stream before using the properties as a parameter for the
+	 * <code>fromProperties(Properties, Class)</code> method.
+	 * 
+	 * <pre>
+	 * Properties p = new Properties();
+	 * p.load(is);
+	 * new Jhpp().fromProperties(p);
+	 * </pre>
+	 * 
+	 * @param <E>  the type of the desired object
+	 * @param is the input stream
+	 * @param t  the class of E
+	 * @return the parsed object
+	 */
 	public <E> E fromProperties(InputStream is, Class<E> t) {
 		try {
 			Properties p = new Properties();
@@ -350,6 +376,22 @@ public class Jhpp {
 		}
 	}
 
+	/**
+	 * This is equivalent to creating a properties object and load the given input
+	 * stream before using the properties as a parameter for the
+	 * <code>fromProperties(Properties, Class)</code> method.
+	 * 
+	 * <pre>
+	 * Properties p = new Properties();
+	 * p.load(r);
+	 * new Jhpp().fromProperties(p);
+	 * </pre>
+	 * 
+	 * @param <E> the type of the desired object
+	 * @param r the reader
+	 * @param t the class of E
+	 * @return the parsed object
+	 */
 	public <E> E fromProperties(Reader r, Class<E> t) {
 		try {
 			Properties p = new Properties();
