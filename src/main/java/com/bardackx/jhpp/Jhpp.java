@@ -28,7 +28,7 @@ public class Jhpp {
 	 * This method parses the given properties object into an object of the
 	 * specified type.
 	 * 
-	 * @param <E> the type of the desired object
+	 * @param   <E> the type of the desired object
 	 * @param p the parsed properties
 	 * @param t the class of E
 	 * @return the parsed oject
@@ -79,14 +79,14 @@ public class Jhpp {
 
 				if (isCollectionType(getter.getReturnType()) && value instanceof Map) {
 
+					Class<?> ct = getter.getReturnType();
 					Class<?> componentType = getCollectionComponentType(setter);
-					if (getter.getReturnType().isArray()) {
-						setter.invoke(entity, mapToObjectArray(componentType, (Map) value));
-					} else if (getter.getReturnType() == List.class) {
-						setter.invoke(entity, mapToObjectList(componentType, (Map) value));
-					} else if (getter.getReturnType() == Map.class) {
-						setter.invoke(entity, value);
-					}
+					if (ct.isArray()) setter.invoke(entity, mapToObjectArray(componentType, (Map) value));
+					else if (ct == List.class) setter.invoke(entity, mapToObjectList(componentType, (Map) value));
+					else if (ct == Map.class) setter.invoke(entity, value);
+					else if (ct == Set.class) setter.invoke(entity, mapToObjectSet(componentType, (Map) value));
+					else throw new JhppException(Code.UNEXPECTED,
+							"Unhandled collection type " + getter.getReturnType());
 
 				} else {
 
@@ -163,6 +163,16 @@ public class Jhpp {
 	private List mapToObjectList(Class<?> componentType, Map map) {
 		Object array = mapToObjectArray(componentType, map);
 		List list = new ArrayList<>();
+		int length = Array.getLength(array);
+		for (int i = 0; i < length; i++)
+			list.add(Array.get(array, i));
+		return list;
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private Set mapToObjectSet(Class<?> componentType, Map map) {
+		Object array = mapToObjectArray(componentType, map);
+		Set list = new HashSet<>();
 		int length = Array.getLength(array);
 		for (int i = 0; i < length; i++)
 			list.add(Array.get(array, i));
@@ -361,7 +371,7 @@ public class Jhpp {
 	 * new Jhpp().fromProperties(p);
 	 * </pre>
 	 * 
-	 * @param <E>  the type of the desired object
+	 * @param    <E> the type of the desired object
 	 * @param is the input stream
 	 * @param t  the class of E
 	 * @return the parsed object
@@ -387,7 +397,7 @@ public class Jhpp {
 	 * new Jhpp().fromProperties(p);
 	 * </pre>
 	 * 
-	 * @param <E> the type of the desired object
+	 * @param   <E> the type of the desired object
 	 * @param r the reader
 	 * @param t the class of E
 	 * @return the parsed object

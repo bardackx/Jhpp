@@ -9,12 +9,58 @@ A Java serialization/deserialization library to convert Java Objects into .prope
   * Enable people to use properties even for hierarchical data structures
   * If your company uses JSON, XML or —god forbids— YAML, to give you a reason to stick to plain old properties files
   
-## Using Jhpp
+## Features
+
+### Lists, Sets, Maps and Arrays
+
+Properties:
+
+This properties file can be parsed...
+
+```properties
+list.1.ammount	=	1.0
+list.2.ammount	=	2.0
+list.3.ammount	=	3.0
+
+set.1.ammount	=	1.0
+set.2.ammount	=	2.0
+set.3.ammount	=	3.0
+
+map.1.ammount	=	1.0
+map.2.ammount	=	2.0
+map.3.ammount	=	3.0
+
+array.1.ammount	=	1.0
+array.2.ammount	=	2.0
+array.3.ammount	=	3.0
+```
+
+Java:
+
+Into a ListSetMapArray object.
+
+```java
+class ListSetMapArray {
+    private List<Measure> list;
+    private Set<Measure> set;
+    private Map<String, Measure> map;
+    private Measure[] array;
+    // ARGUMENTLESS CONSTRUCTOR, GETTERS, SETTERS, EQUALS, HASHCODE
+}
+class Measure {
+    private double ammount;
+    private String source;
+    // ARGUMENTLESS CONSTRUCTOR, GETTERS, SETTERS, EQUALS, HASHCODE
+}
+```
+  
+## How to use Jhpp
 The primary class to use is Gson which you can just create by calling `new Jhpp()`.
 
 ### From properties example
 
 Properties:
+
 ```properties
 pro.url         = pro.example.com
 pro.email.user  = pro
@@ -32,6 +78,7 @@ qas.db.pass     = 1234<-samePassword
 Java:
 
 Argumentless constructors, and getter and setter methods for each field are omitted for brevity, but they are required by the library
+
 ```java
 class Environments {
     private String url;

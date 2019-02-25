@@ -19,6 +19,7 @@ import com.bardackx.jhpp.tests.abpe.AdamBertramPersonalExample;
 import com.bardackx.jhpp.tests.abpe.Dog;
 import com.bardackx.jhpp.tests.abpe.Spouse;
 import com.bardackx.jhpp.tests.collections.ExchangeRates;
+import com.bardackx.jhpp.tests.collections.ListSetMapArray;
 import com.bardackx.jhpp.tests.collections.Measure;
 import com.bardackx.jhpp.tests.collections.TodoList;
 import com.bardackx.jhpp.tests.collections.TodoListItem;
@@ -263,13 +264,13 @@ public class JhppTests {
 		Environments actual = new Jhpp().fromProperties(is, Environments.class);
 
 		Environments expected = new Environments();
-		
+
 		Environment pro = new Environment();
 		pro.setUrl("pro.example.com");
 		pro.setEmail(new Account("pro", "complex$Password123"));
 		pro.setDb(new Account("myprosql", "different$Password123"));
 		expected.setPro(pro);
-		
+
 		Environment qas = new Environment();
 		qas.setUrl("qas.example.com");
 		qas.setEmail(new Account("qas", "1234<-easyPassword"));
@@ -278,5 +279,28 @@ public class JhppTests {
 
 		Util.assertEqualsVerbose(expected, actual);
 
+	}
+
+	@Test
+	public void listSetMapArrayTest() {
+
+		ListSetMapArray actual = new Jhpp().fromProperties(
+				getClass().getResourceAsStream("collections/list-set-map-array.properties"), ListSetMapArray.class);
+
+		List<Measure> list = new ArrayList<>();
+		Set<Measure> set = new HashSet<>();
+		Map<String, Measure> map = new HashMap<>();
+		Measure[] array = { new Measure(1.0, null), new Measure(2.0, null), new Measure(3.0, null), };
+
+		for (int i = 0; i < array.length; i++) {
+			Measure e = array[i];
+			list.add(e);
+			set.add(e);
+			map.put("" + (i + 1), e);
+		}
+
+		ListSetMapArray expected = new ListSetMapArray(list, set, map, array);
+
+		Util.assertEqualsVerbose(expected, actual);
 	}
 }
