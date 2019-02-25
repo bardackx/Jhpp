@@ -34,6 +34,7 @@ Java:
 Argumentless constructors, and getter and setter methods for each field are omitted for brevity, but they are required by the library
 ```java
 class Environments {
+    private String url;
     private Environment pro, qas;
     // ARGUMENTLESS CONSTRUCTOR, GETTERS, SETTERS, EQUALS, HASHCODE
 }
