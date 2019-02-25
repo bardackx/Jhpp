@@ -4,6 +4,10 @@ A Java serialization/deserialization library to convert Java Objects into .prope
 ## Goals
   * Provide simple `toProperties()` and `fromProperties()` methods to convert Java objects to properties file and vice-versa
   * Allow pre-existing unmodifiable objects to be converted to and from properties file
+
+## Real goals
+  * Enable people to use properties even for hierarchical data structures
+  * If your company uses JSON, XML or —god forbids— YAML, to give you a reason to stick to plain old properties files
   
 ## Using Jhpp
 The primary class to use is Gson which you can just create by calling `new Jhpp()`.
