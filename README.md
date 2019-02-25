@@ -35,12 +35,15 @@ Argumentless constructors, and getter and setter methods for each field are omit
 ```java
 class Environments {
     private Environment pro, qas;
+    // ARGUMENTLESS CONSTRUCTOR, GETTERS, SETTERS, EQUALS, HASHCODE
 }
 class Environment {
     private Account email, db;
+    // ARGUMENTLESS CONSTRUCTOR, GETTERS, SETTERS, EQUALS, HASHCODE
 }
 class Account {
     private String user, pass;
+    // ARGUMENTLESS CONSTRUCTOR, GETTERS, SETTERS, EQUALS, HASHCODE
 }
 
 // deserialization
