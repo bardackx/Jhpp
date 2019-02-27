@@ -3,12 +3,15 @@ package com.bardackx.jhpp.tests;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.Set;
 
 import org.junit.Test;
@@ -82,6 +85,80 @@ public class JhppTests {
 		expected.setDogs(dogs);
 
 		Util.assertEqualsVerbose(expected, actual);
+	}
+
+	/**
+	 * Inspired by
+	 * https://searchitoperations.techtarget.com/tip/Learn-YAML-through-a-personal-example
+	 */
+	@Test
+	public void adamBertramPersonalExample2Test() {
+
+		AdamBertramPersonalExample source = new AdamBertramPersonalExample();
+		source.setFirstName("Adam");
+		source.setLastName("Bertram");
+		source.setHairColor("Brown");
+		source.setMarried(true);
+		source.setDogCount(2);
+
+		Spouse spouse = new Spouse();
+		spouse.setName("Miranda");
+		spouse.setOccupation("Mom");
+		spouse.setInterests(new String[] { "Instagram", "Facebook", "Keeping the Bertram family in check" });
+		source.setSpouse(spouse);
+
+		Dog dog1 = new Dog();
+		dog1.setName("Elliot");
+		dog1.setBreed("Shih-Tzu");
+		dog1.setColor("black/white");
+
+		Dog dog2 = new Dog();
+		dog2.setName("Brody");
+		dog2.setBreed("Shih-Tzu");
+		dog2.setColor("black/white");
+
+		Dog[] dogs = new Dog[] { dog1, dog2 };
+
+		source.setDogs(dogs);
+
+		Properties actual = new Jhpp().toProperties(source);
+
+		Properties expected = new Properties();
+		try {
+			expected.load(getClass().getResourceAsStream("abpe/scenario.to.properties"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		System.out.println("============================ EXPECTED");
+		for (Entry<Object, Object> e : expected.entrySet()) {
+			System.out.println(e.getKey() + " : " + e.getValue());
+		}
+		System.out.println("============================ ACTUAL");
+		for (Entry<Object, Object> e : actual.entrySet()) {
+			System.out.println(e.getKey() + " : " + e.getValue());
+		}
+		System.out.println("============================ FALTANTES");
+		Properties faltantes = new Properties();
+		for (Object keyObject : expected.keySet()) {
+			String key = (String) keyObject;
+			String expectedValue = expected.getProperty(key);
+			if (!actual.containsKey(key)) {
+				faltantes.setProperty(key, expectedValue);
+			} else {
+				String actualValue = actual.getProperty(key);
+				if (!expectedValue.equals(actualValue)) {
+					System.out.println(actualValue + " != " + expectedValue);
+					faltantes.setProperty(key, expectedValue);
+				}
+			}
+		}
+		for (Entry<Object, Object> e : faltantes.entrySet()) {
+			System.out.println(e.getKey() + " : " + e.getValue());
+		}
+		System.out.println("============================");
+
+		assertEquals(expected, actual);
 	}
 
 	/**

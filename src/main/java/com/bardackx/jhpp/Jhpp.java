@@ -411,4 +411,111 @@ public class Jhpp {
 			throw new RuntimeException(e);
 		}
 	}
+
+	/**
+	 * Writes the source object values as entries of a properties object
+	 * 
+	 * @param e source object
+	 * @return the properties object
+	 */
+	public Properties toProperties(Object e) {
+		try {
+			Properties p = new Properties();
+			write(p, "", e);
+			return p;
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+			throw new JhppException(ex);
+		}
+	}
+
+	private void write(Properties p, String keyPrefix, Object e)
+			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+
+		System.out.println(keyPrefix + " <- " + e);
+
+		for (Method method : e.getClass().getMethods()) {
+
+			if (method.getParameterCount() != 0) continue;
+
+			String methodName = method.getName();
+
+			String propertyName = null;
+			if (methodName.startsWith("get")) propertyName = methodName.substring(3);
+			else if (methodName.startsWith("is")) propertyName = methodName.substring(2);
+			else continue;
+
+			if ("Class".equals(propertyName)) continue;
+
+			String entryKey = keyPrefix + propertyName.substring(0, 1).toLowerCase() + propertyName.substring(1);
+			Object entryValue = method.invoke(e);
+
+			if (isSerializable(entryValue)) p.put(entryKey, serialize(entryValue));
+			else if (isCollection(entryValue)) {
+
+				Class<?> collectionType = entryValue.getClass();
+				if (collectionType.isArray()) {
+					int length = Array.getLength(entryValue);
+					for (int index = 0; index < length; index++) {
+						Object element = Array.get(entryValue, index);
+						write(p, entryKey + "." + index + ".", element);
+					}
+				} else {
+					throw new JhppException(Code.UNEXPECTED, "Unsupported collection type '" + collectionType + "'.");
+				}
+
+			} else write(p, entryKey + ".", entryValue);
+		}
+	}
+
+	private boolean isCollection(Object entryValue) {
+		if (entryValue == null) return true;
+		Class<?> type = entryValue.getClass();
+		return isCollectionType(type);
+	}
+
+	private static final Map<Class<?>, Serializer> serializers = new HashMap<>();
+
+	static {
+
+		serializers.put(int.class, e -> Integer.toString((Integer) e));
+		serializers.put(char.class, e -> Character.toString((Character) e));
+		serializers.put(byte.class, e -> Byte.toString((Byte) e));
+		serializers.put(long.class, e -> Long.toString((Long) e));
+		serializers.put(short.class, e -> Short.toString((Short) e));
+		serializers.put(float.class, e -> Float.toString((Float) e));
+		serializers.put(double.class, e -> Double.toString((Double) e));
+		serializers.put(boolean.class, e -> Boolean.toString((Boolean) e));
+
+		serializers.put(Integer.class, e -> Integer.toString((Integer) e));
+		serializers.put(Character.class, e -> Character.toString((Character) e));
+		serializers.put(Byte.class, e -> Byte.toString((Byte) e));
+		serializers.put(Long.class, e -> Long.toString((Long) e));
+		serializers.put(Short.class, e -> Short.toString((Short) e));
+		serializers.put(Float.class, e -> Float.toString((Float) e));
+		serializers.put(Double.class, e -> Double.toString((Double) e));
+		serializers.put(Boolean.class, e -> Boolean.toString((Boolean) e));
+
+		serializers.put(String.class, e -> "" + e);
+	}
+
+	private boolean isSerializable(Object entryValue) {
+		if (entryValue == null) return true;
+		Class<?> type = entryValue.getClass();
+		if (type.isArray()) return serializers.containsKey(type.getComponentType());
+		return serializers.containsKey(type);
+	}
+
+	private Object serialize(Object entryValue) {
+		if (entryValue == null) return "null";
+		Class<?> type = entryValue.getClass();
+		if (type.isArray()) {
+			CsvRow row = new CsvRow();
+			int length = Array.getLength(entryValue);
+			for (int i = 0; i < length; i++)
+				row.add(serialize(Array.get(entryValue, i)));
+			return row.toString();
+		}
+		return serializers.get(type).serialize(entryValue);
+	}
+
 }

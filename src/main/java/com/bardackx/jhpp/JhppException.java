@@ -15,6 +15,11 @@ public class JhppException extends RuntimeException {
 		this.type = type;
 	}
 
+	public JhppException(Exception ex) {
+		super(ex);
+		this.type = Code.UNEXPECTED;
+	}
+
 	public Code getType() {
 		return type;
 	}
