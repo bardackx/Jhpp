@@ -10,7 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.Set;
 
@@ -18,6 +17,10 @@ import org.junit.Test;
 
 import com.bardackx.jhpp.Jhpp;
 import com.bardackx.jhpp.JhppException;
+import com.bardackx.jhpp.tests.abc.A;
+import com.bardackx.jhpp.tests.abc.ABC;
+import com.bardackx.jhpp.tests.abc.B;
+import com.bardackx.jhpp.tests.abc.C;
 import com.bardackx.jhpp.tests.abpe.AdamBertramPersonalExample;
 import com.bardackx.jhpp.tests.abpe.Dog;
 import com.bardackx.jhpp.tests.abpe.Spouse;
@@ -129,34 +132,6 @@ public class JhppTests {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
-		System.out.println("============================ EXPECTED");
-		for (Entry<Object, Object> e : expected.entrySet()) {
-			System.out.println(e.getKey() + " : " + e.getValue());
-		}
-		System.out.println("============================ ACTUAL");
-		for (Entry<Object, Object> e : actual.entrySet()) {
-			System.out.println(e.getKey() + " : " + e.getValue());
-		}
-		System.out.println("============================ FALTANTES");
-		Properties faltantes = new Properties();
-		for (Object keyObject : expected.keySet()) {
-			String key = (String) keyObject;
-			String expectedValue = expected.getProperty(key);
-			if (!actual.containsKey(key)) {
-				faltantes.setProperty(key, expectedValue);
-			} else {
-				String actualValue = actual.getProperty(key);
-				if (!expectedValue.equals(actualValue)) {
-					System.out.println(actualValue + " != " + expectedValue);
-					faltantes.setProperty(key, expectedValue);
-				}
-			}
-		}
-		for (Entry<Object, Object> e : faltantes.entrySet()) {
-			System.out.println(e.getKey() + " : " + e.getValue());
-		}
-		System.out.println("============================");
 
 		assertEquals(expected, actual);
 	}
@@ -377,6 +352,44 @@ public class JhppTests {
 		}
 
 		ListSetMapArray expected = new ListSetMapArray(list, set, map, array);
+
+		Util.assertEqualsVerbose(expected, actual);
+	}
+
+	@Test
+	public void abcTest() {
+
+		ABC actual = new Jhpp().fromProperties(getClass().getResourceAsStream("abc/abc.properties"), ABC.class);
+
+		ABC expected = new ABC();
+
+		{
+			A a = new A();
+			B b = new B();
+			C c = new C();
+			b.setC(c);
+			a.setB(b);
+			expected.setA1(a);
+			c.setValue("1");
+		}
+		{
+			A a = new A();
+			B b = new B();
+			C c = new C();
+			b.setC(c);
+			a.setB(b);
+			expected.setA2(a);
+			c.setValue("2");
+		}
+		{
+			A a = new A();
+			B b = new B();
+			C c = new C();
+			b.setC(c);
+			a.setB(b);
+			expected.setA3(a);
+			c.setValue("3");
+		}
 
 		Util.assertEqualsVerbose(expected, actual);
 	}

@@ -1,13 +1,14 @@
 # Jhpp
-A Java serialization/deserialization library to convert Java Objects into .property files and back
+A Java serialization/deserialization library to convert Java Objects into .property files and back.
 
 ## Goals
   * Provide simple `toProperties()` and `fromProperties()` methods to convert Java objects to properties file and vice-versa
   * Allow pre-existing unmodifiable objects to be converted to and from properties file
-
-## Real goals
   * Enable people to use properties even for hierarchical data structures
-  * If your company uses JSON, XML or —god forbids— YAML, to give you a reason to stick to plain old properties files
+  
+### Note
+
+Are you sure you want to use property files instead of YAML? I can understand if you dont want to get into closing curly brace hell, or if you hate the verbosity of XML, but YAML is pretty good for expressing nested objects as a configuration file.
   
 ## Features
 
@@ -101,4 +102,22 @@ Environments actual = new Jhpp().fromProperties(is, Environments.class);
 
 ### To properties example
 
-This feature is not ready yet
+Java:
+
+You can turn an object into a properties object
+
+````java
+Object source = ... (any object)
+Properties properties = new Jhpp().toProperties(source);
+````
+
+Or if you preffer it you can write to a file istead
+
+````java
+Object source = ... (any object)
+try (OutputStream os = new FileOutputStream("out.properties")) {
+    new Jhpp().toProperties(source, os);
+} catch (IOException ex) {
+    ex.printStackTrace();
+}
+```

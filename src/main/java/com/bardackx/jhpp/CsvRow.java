@@ -8,7 +8,9 @@ class CsvRow {
 	void add(Object value) {
 		if (!empty) builder.append(", ");
 		else empty = false;
-		builder.append(value);
+		String valueAsString = "" + value;
+		if (valueAsString.contains(",")) valueAsString = '"' + valueAsString + '"';
+		builder.append(valueAsString);
 	}
 
 	@Override

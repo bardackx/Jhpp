@@ -2,12 +2,14 @@ package com.bardackx.jhpp;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -421,17 +423,65 @@ public class Jhpp {
 	public Properties toProperties(Object e) {
 		try {
 			Properties p = new Properties();
-			write(p, "", e);
+			serializeIntoProperty(p, "", e);
 			return p;
 		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
 			throw new JhppException(ex);
 		}
 	}
 
-	private void write(Properties p, String keyPrefix, Object e)
+	/**
+	 * Write each propertie as a line in a string and sort the fields in
+	 * alphabetical order
+	 * 
+	 * @param e source object
+	 * @return properties file as string
+	 */
+	public String toPropertiesString(Object e) {
+
+		Properties p = toProperties(e);
+		StringBuilder b = new StringBuilder();
+
+		List<String> immediateKeys = new ArrayList<>();
+		List<String> nestedKeys = new ArrayList<>();
+
+		for (Object keyObject : p.keySet()) {
+			String key = (String) keyObject;
+			if (key.contains(".")) nestedKeys.add(key);
+			else immediateKeys.add(key);
+		}
+
+		Collections.sort(immediateKeys);
+		Collections.sort(nestedKeys);
+
+		for (Object k : immediateKeys) {
+			b.append(k);
+			b.append(" : ");
+			b.append(p.get(k));
+			b.append("\r\n");
+		}
+		for (Object k : nestedKeys) {
+			b.append(k);
+			b.append(" : ");
+			b.append(p.get(k));
+			b.append("\r\n");
+		}
+
+		return b.toString();
+	}
+
+	public void toProperties(Object e, OutputStream os) throws IOException {
+		toProperties(e, os, Charset.defaultCharset());
+	}
+
+	public void toProperties(Object e, OutputStream os, Charset charset) throws IOException {
+		os.write(toPropertiesString(e).getBytes(charset));
+	}
+
+	private void serializeIntoProperty(Properties p, String keyPrefix, Object e)
 			throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 
-		System.out.println(keyPrefix + " <- " + e);
+		// System.out.println(keyPrefix + " <- " + e);
 
 		for (Method method : e.getClass().getMethods()) {
 
@@ -457,13 +507,13 @@ public class Jhpp {
 					int length = Array.getLength(entryValue);
 					for (int index = 0; index < length; index++) {
 						Object element = Array.get(entryValue, index);
-						write(p, entryKey + "." + index + ".", element);
+						serializeIntoProperty(p, entryKey + "." + index + ".", element);
 					}
 				} else {
 					throw new JhppException(Code.UNEXPECTED, "Unsupported collection type '" + collectionType + "'.");
 				}
 
-			} else write(p, entryKey + ".", entryValue);
+			} else serializeIntoProperty(p, entryKey + ".", entryValue);
 		}
 	}
 
