@@ -86,11 +86,11 @@ Argumentless constructors, and getter and setter methods for each field are omit
 
 ```java
 class Environments {
-    private String url;
     private Environment pro, qas;
     // ARGUMENTLESS CONSTRUCTOR, GETTERS, SETTERS, EQUALS, HASHCODE
 }
 class Environment {
+    private String url;
     private Account email, db;
     // ARGUMENTLESS CONSTRUCTOR, GETTERS, SETTERS, EQUALS, HASHCODE
 }
