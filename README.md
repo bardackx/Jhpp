@@ -8,7 +8,11 @@ A Java serialization/deserialization library to convert Java Objects into .prope
   
 ### Note
 
-Are you sure you want to use property files instead of YAML? I can understand if you dont want to get into closing curly brace hell, or if you hate the verbosity of XML, but YAML is pretty good for expressing nested objects as a configuration file.
+Are you sure you want to use property files instead of YAML? I can understand if you dont want to get into closing curly brace hell of JSON, or if you hate the verbosity of XML, but YAML is pretty good for expressing nested objects as a configuration file.
+
+### Note 2
+
+I made this project as a joke (an the project working properly is my equivalent of having a straight face during the joke)
   
 ## Features
 
@@ -56,7 +60,7 @@ class Measure {
 ```
   
 ## How to use Jhpp
-The primary class to use is Gson which you can just create by calling `new Jhpp()`.
+The primary class to use is Jhpp which you can just create by calling `new Jhpp()`.
 
 ### From properties example
 
